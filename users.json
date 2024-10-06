@@ -1,0 +1,11 @@
+{
+    "users": [
+        {
+            "name": "qfana",
+            "group": "PRd4410",
+            "notify": true,
+            "cabinet": true,
+            "timeInSchidule": true
+        }
+    ]
+}
