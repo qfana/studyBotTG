@@ -1,11 +1,12 @@
 {
     "users": [
         {
+            "id": 938403523,
             "name": "qfana",
             "group": "PRd4410",
-            "notify": true,
-            "cabinet": true,
-            "timeInSchidule": true
+            "notify": false,
+            "cabinet": false,
+            "timeInSchidule": false
         }
     ]
 }
