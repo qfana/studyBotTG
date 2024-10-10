@@ -4,7 +4,7 @@
             "id": 938403523,
             "name": "qfana",
             "group": "PRd4410",
-            "notify": false,
+            "notify": true,
             "cabinet": false,
             "timeInSchidule": false
         }

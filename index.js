@@ -1,6 +1,7 @@
 const { Api, Bot, Keyboard, InlineKeyboard } = require("grammy");
 require('dotenv').config();
 const schedule = require("./test.json");
+const chlog = require("./changelog.json");
 const User = require("./User");
 const fs = require("fs");
 const data = fs.readFileSync("./users.json");
@@ -44,6 +45,58 @@ function addMessageToQueue(chatId, message, options = {}) {
   messageQueue.push({ chatId, message, options });
   processQueue();
 }
+
+// Оповещения о звонках, если не трогать то будет работать (мб ток конфиги менять)
+setInterval(() => {
+  let date = new Date();
+  let time = date.getHours() + ":" + date.getMinutes();
+
+  const today = `${date.getDate()}.${date.getMonth() + 1}`;
+
+  if (chlog[today] && time == "6:0") {
+    jsonData.users.forEach((element) => {
+      addMessageToQueue(element.id, chlog[today], { parse_mode: "Markdown" });
+    });
+  }
+
+  const usersList = [];
+  jsonData.users.forEach((element) => {
+    if (element.notify) {
+      usersList.push({ id: element.id, group: element.group });
+    }
+  });
+
+  usersList.forEach((element) => {
+    const group = schedule.groups[element.group];
+    const schedules = group.week;
+    const checkDate = schedules.find(obj => obj.day == today);
+
+    const textNotify = "Звонок через 5 минут";
+
+    if (checkDate) {
+      if (checkDate.plan[0] && time == "8:55") {
+        addMessageToQueue(element.id, textNotify);
+      }
+      if (checkDate.plan[1] && time == "10:35") {
+        addMessageToQueue(element.id, textNotify);
+
+      }
+      if (checkDate.plan[2] && time == "12:35") {
+        addMessageToQueue(element.id, textNotify);
+
+      }
+      if (checkDate.plan[3] && time == "14:25") {
+        addMessageToQueue(element.id, textNotify);
+
+      }
+      if (checkDate.plan[4] && time == "16:50") {
+        addMessageToQueue(element.id, textNotify);
+
+      }
+    }
+  });
+
+}, 60000);
 
 const keyboardDefault = new Keyboard()
   .text("Расписание на сегодня")
@@ -103,7 +156,6 @@ bot.command("start", async (ctx) => {
 });
 
 bot.on("message", async (ctx) => {
-
   const username = ctx.msg.chat.first_name;
 
   const message = ctx.msg.text;
@@ -198,9 +250,7 @@ ${parseWeek[i].join("\n")}\n\n`;
   });
 
   if (message == "Настройки") {
-
     return settings(uid, user);
-
   }
 
   if (message == "Расписание на неделю") {
@@ -235,7 +285,6 @@ bot.on("callback_query", async (ctx) => {
   if (message == 'change_notify') {
     user.notify = !user.notify;
     addMessageToQueue(uid, "Успешно применено");
-
   }
   if (message == 'change_cabinet') {
     user.cabinet = !user.cabinet;
