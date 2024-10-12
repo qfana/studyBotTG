@@ -1,6 +1,6 @@
 const { Api, Bot, Keyboard, InlineKeyboard } = require("grammy");
 require('dotenv').config();
-const schedule = require("./test.json");
+const schedule = require("./schedule.json");
 const chlog = require("./changelog.json");
 const User = require("./User");
 const fs = require("fs");
@@ -68,30 +68,40 @@ setInterval(() => {
 
   usersList.forEach((element) => {
     const group = schedule.groups[element.group];
-    const schedules = group.week;
-    const checkDate = schedules.find(obj => obj.day == today);
+    if (group) {
+      const schedules = group.week;
+      const checkDate = schedules.find(obj => obj.day == today);
 
-    const textNotify = "Звонок через 5 минут";
+      const textNotify = "Звонок через 5 минут";
 
-    if (checkDate) {
-      if (checkDate.plan[0] && time == "8:55") {
-        addMessageToQueue(element.id, textNotify);
-      }
-      if (checkDate.plan[1] && time == "10:35") {
-        addMessageToQueue(element.id, textNotify);
+      if (checkDate) {
+        if (checkDate.plan[0] && time == "8:55") {
+          addMessageToQueue(element.id, textNotify);
+        }
+        if (checkDate.plan[1] && time == "10:35") {
+          addMessageToQueue(element.id, textNotify);
 
-      }
-      if (checkDate.plan[2] && time == "12:35") {
-        addMessageToQueue(element.id, textNotify);
+        }
+        if (checkDate.plan[2] && time == "12:35") {
+          addMessageToQueue(element.id, textNotify);
 
-      }
-      if (checkDate.plan[3] && time == "14:25") {
-        addMessageToQueue(element.id, textNotify);
+        }
+        if (checkDate.plan[3] && time == "14:25") {
+          addMessageToQueue(element.id, textNotify);
 
-      }
-      if (checkDate.plan[4] && time == "16:50") {
-        addMessageToQueue(element.id, textNotify);
+        }
+        if (checkDate.plan[4] && time == "16:5") {
+          addMessageToQueue(element.id, textNotify);
 
+        }
+        if (checkDate.plan[5] && time == "17:45") {
+          addMessageToQueue(element.id, textNotify);
+
+        }
+        if (checkDate.plan[6] && time == "19:25") {
+          addMessageToQueue(element.id, textNotify);
+
+        }
       }
     }
   });
@@ -112,19 +122,53 @@ const inLineSetting = new InlineKeyboard()
   .text("Отображение кабинета", "change_cabinet")
   .text("Отображение времени", "change_time");
 
-const inLineSettingGroup = new InlineKeyboard()
-  .text("ПРд4410", "change_group_PRd4410");
+const inLineSettingGroups = new InlineKeyboard()
+  .text("ТДд", "groups_TDd").text("ЭБд", "groups_EBd").text("ПДд", "groups_PDd").text("НБд", "groups_NBd").text("ЮРд", "groups_URd").row()
+  .text("PRd", "groups_PRd").text("МЕд", "groups_MEd").text("ЮРо", "groups_URo").text("ИПо", "groups_IPo").text("ПСо", "groups_PSo");
+
+const _TDd = new InlineKeyboard()
+  .text("1410", "setGroup_TDd1410").text("1310", "setGroup_TDd1310").text("1210", "setGroup_TDd1210").text("1110", "setGroup_TDd1110").text("1010", "setGroup_TDd1010");
+
+const _EBd = new InlineKeyboard()
+  .text("1410", "setGroup_EBd1410").text("1310", "setGroup_EBd1310").text("1210", "setGroup_EBd1210").text("1110", "setGroup_EBd1110").text("1010", "setGroup_EBd1010");
+
+const _PDd = new InlineKeyboard()
+  .text("1410", "setGroup_PDd1410").text("1310", "setGroup_PDd1310").text("1210", "setGroup_PDd1210").text("1110", "setGroup_PDd1110").text("1010", "setGroup_PDd1010");
+
+const _NBd = new InlineKeyboard()
+  .text("1410", "setGroup_NBd1410").text("1310", "setGroup_NBd1310").text("2310", "setGroup_NBd2310").text("1210", "setGroup_NBd1210").row()
+  .text("2210", "setGroup_NBd2210").text("1110", "setGroup_NBd1110").text("1010", "setGroup_NBd1010");
+
+const _URd = new InlineKeyboard()
+  .text("4410", "setGroup_URd4410").text("4310", "setGroup_URd4310").text("4210", "setGroup_URd4210").text("4110", "setGroup_URd4110");
+
+const _PRd = new InlineKeyboard()
+  .text("4410", "setGroup_PRd4410").text("4310", "setGroup_PRd4310").text("4210", "setGroup_PRd4210");
+
+const _MEd = new InlineKeyboard()
+  .text("4410", "setGroup_MEd4410");
+
+const _URo = new InlineKeyboard()
+  .text("9481", "setGroup_URo9481").text("8481", "setGroup_URo8481");
+
+const _IPo = new InlineKeyboard()
+  .text("9481", "setGroup_IPo9481").text("8481", "setGroup_IPo8481").text("8381", "setGroup_IPo8381");
+
+const _PSo = new InlineKeyboard()
+  .text("9381", "setGroup_PSo9381").text("8381", "setGroup_PSo8381").text("8281", "setGroup_PSo8281");
 
 const dayWeek = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"];
-const timeZ = ["9:00 - 10:30", "10:40 - 12:10", "12:40 - 14:10", "14:30 - 16:00", "16:10 - 17:40"];
+const timeZ = ["9:00 - 10:30", "10:40 - 12:10", "12:40 - 14:10", "14:30 - 16:00", "16:10 - 17:40", "17:50 - 19:20", "19:30 - 21:00"];
 
 async function settings(uid, user) {
   const checkNotify = parse(user.notify);
   const checkTime = parse(user.timeInSchidule);
   const checkCabinet = parse(user.cabinet);
+  const checkGroup = user.group ? user.group : "Не выбрана";
+
   return addMessageToQueue(uid, `*__Настройки бота МФЮА ЯО__*
 
-Группа: *${user.group}*
+Группа: *${checkGroup}*
 Уведомления о звонках: *${checkNotify}*
 Отображение номера аудиотории: *${checkCabinet}*
 Время в расписание: *${checkTime}*`,
@@ -224,7 +268,8 @@ ${parseToday.join('\n')}`,
   const parseWeek = schedules.map((objDay) => {
 
     return objDay.plan.map((objPlan, i) => {
-      if (objPlan) {
+
+      if (objPlan.name) {
         let text = `${i + 1})`;
 
         if (user.timeInSchidule) {
@@ -279,7 +324,7 @@ bot.on("callback_query", async (ctx) => {
   }
 
   if (message == 'change_group') {
-    return addMessageToQueue(uid, "Выберите группу (В данный момент доступна лишь одна)", { reply_markup: inLineSettingGroup });
+    return addMessageToQueue(uid, "Выберите факультет группы:", { reply_markup: inLineSettingGroups });
   }
 
   if (message == 'change_notify') {
@@ -294,14 +339,23 @@ bot.on("callback_query", async (ctx) => {
   if (message == 'change_time') {
     user.timeInSchidule = !user.timeInSchidule;
     addMessageToQueue(uid, "Успешно применено");
-
   }
-  if (message == 'change_group_PRd4410') {
-    user.group = "PRd4410";
+
+  if (message.substring(0, 7) == "groups_") {
+    const arrA = ["_TDd", "_EBd", "_PDd", "_NBd", "_URd", "_PRd", "_MEd", "_URo", "_IPo", "_PSo"];
+    const findarrs = arrA.indexOf(message.substring(6, 10));
+    const arrB = [_TDd, _EBd, _PDd, _NBd, _URd, _PRd, _MEd, _URo, _IPo, _PSo];
+
+    addMessageToQueue(uid, "Выберите группу:", { reply_markup: arrB[findarrs] });
+  }
+
+  if (message.substring(0, 9) == 'setGroup_') {
+    user.group = message.substring(9, 16);
     addMessageToQueue(uid, "Успешно применено");
   }
 
-  return await fs.writeFileSync("./users.json", JSON.stringify(jsonData, null, 4), "utf-8");
+  return fs.writeFileSync("./users.json", JSON.stringify(jsonData, null, 4), "utf-8");
 });
+
 
 bot.start();
