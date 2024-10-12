@@ -129,5 +129,3 @@ const resultjson = JSON.stringify(result, null, 4);
 fs.writeFile("thing.json", resultjson, function (err, result) {
   if (err) console.log('error', err);
 });
-
-// дОДЕЛАТЬ: проверить первый символ каждого названия группы, если это "*" - скипаем первый символ
